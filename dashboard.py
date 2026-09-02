@@ -10,14 +10,14 @@ st.caption("Simulated revenue-ops pipeline — utility invoice ingestion, reconc
 
 @st.cache_data
 def load_data():
-    invoices = pd.read_csv(r"C:\Users\KL\OneDrive\Desktop\UtilityRecon\all_invoices_clean.csv")
-    with open(r"C:\Users\KL\OneDrive\Desktop\UtilityRecon\kpi_summary.json", "r") as f:
+    invoices = pd.read_csv("all_invoices_clean.csv")
+    with open("kpi_summary.json", "r") as f:
         kpis = json.load(f)
     return invoices, kpis
 
 
 def load_reconciliation_data():
-    vendor_summary = pd.read_csv(r"C:\Users\KL\OneDrive\Desktop\UtilityRecon\vendor_summary.csv")
+    vendor_summary = pd.read_csv("vendor_summary.csv")
     return vendor_summary
 
 
@@ -110,8 +110,9 @@ if len(date_range) == 2:
 st.write(f"{len(flagged):,} invoices flagged")
 
 display_columns = ["invoice_id", "vendor", "account_id", "amount_inr", "bill_date"]
-st.dataframe(flagged[display_columns].head(100), use_container_width=True)
-
+flagged_display = flagged[display_columns].copy()
+flagged_display["bill_date"] = flagged_display["bill_date"].dt.strftime("%Y-%m-%d")
+st.dataframe(flagged_display, use_container_width=True)
 st.download_button(
     label="Download flagged invoices (CSV)",
     data=flagged[display_columns].to_csv(index=False).encode("utf-8"),
